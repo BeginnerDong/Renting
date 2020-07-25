@@ -53,8 +53,24 @@
 						<view class="li" v-for="(v,i) in 4" :key="i" @click="change('left',i)" :class="leftCurr==i?'on':''">1000-3000</view>
 						
 						<view>
-							<view class="bg-f5 py-3">3500元-不限</view>
-							<view style="height: 100rpx;"></view>
+							<view class="bg-f5 py-3">
+								<text>{{ rangeValues[0] }}</text>~
+								<text>{{ rangeValues[1] }}</text>
+							</view>
+							<view class="py-3">				<!-- 区域选择 -->
+									<RangeSlider
+										:width="slideWidth"
+										:height="slideHeight"
+										:blockSize="slideBlockSize"
+										:min="slideMin"
+										:max="slideMax"
+										:values="rangeValues"
+										:step="step"
+										:liveMode="isLiveMode"
+										@rangechange="onRangeChange"
+									>
+									</RangeSlider>
+							</view>
 						</view>
 						<view class="Mgb colorf py-3">确定</view>
 					</view>
@@ -62,7 +78,7 @@
 					<view class="bg-mask" style="z-index: 9;" v-show="liCurr==2">
 						<view class="choose bg-white p-a right-0 h-100 flex5">
 								<view class="flex-1 top">
-									<view v-for="v in 5" class="px-3 py-4 bB-e1">
+									<view v-for="v in 5" class="px-3 py-4 bB-e1" :key="v">
 										<view class="pb-1">价格</view>
 										<view class="d-flex flex-wrap">
 											<view class="oo on">不限</view>
@@ -115,7 +131,7 @@
 		
 		
 		
-		<view class="yx py-3 mx-3 bB-f5 flex1" v-for="v in 4">
+		<view class="yx py-3 mx-3 bB-f5 flex1" v-for="v in 4" :key="v">
 			<image src="../../static/images/home-img1.png" class="yxImg"></image>
 			<view class="line-h flex5 pl-2 flex-1 yxTxt">
 				<view class="font-30">整租·金天地悦睿府</view>
@@ -133,21 +149,34 @@
 </template>
 
 <script>
+	import RangeSlider from '../../components/range-slider/range-slider.vue';
 	export default {
 		data() {
 			return {
-				liCurr:0,
-				is_show:false,
+				liCurr:1,
+				is_show:true,
 				rightCurr:0,
 				leftCurr:0,
-				qtCurr:0
+				qtCurr:0,
+				
+				// 区域选择
+				rangeValues: [2000,5000],       //当前区间值
+				slideWidth: 570,    //宽度
+				slideHeight: 40,     //高度
+				slideBlockSize: 30,     //圆形按钮大小
+				slideMin: 0,      //slider最小值
+				slideMax: 8500,     //slider最大值
+				isLiveMode: true,     //是否刷新数值
+				step: 100      //步数
 			}
+		},
+		components:{
+			RangeSlider
 		},
 		methods: {
 			changeLi(i){
 				const self = this;
 				if(self.liCurr == i){
-					// if(self.is_show)
 					self.is_show = !self.is_show
 				}else{
 					self.is_show = true
@@ -165,7 +194,18 @@
 				}else{
 					self.is_show = false
 				}
+			},
+			
+			// 区域选择滑动事件
+			onRangeChange: function(e) {
+				this.rangeValues = [e.minValue, e.maxValue];
+			
+				console.log(this.rangeValues);
+				console.log(JSON.stringify(e));
 			}
+			// 区域选择滑动事件
+			
+			
 		}
 	}
 </script>
