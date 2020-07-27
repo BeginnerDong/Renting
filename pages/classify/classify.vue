@@ -118,7 +118,7 @@
 			
 			
 		</view>
-		<view class="bg-mask" style="z-index: 9;margin-top: 100rpx;" v-show="is_show && liCurr!=2"></view> 
+		<view class="bg-mask" style="z-index: 9;margin-top: 100rpx;" v-show="is_show && liCurr!=2" @click="change('',)"></view> 
 		
 		
 		<view class="fon-30 px-3 pb-1 flex flex-wrap">

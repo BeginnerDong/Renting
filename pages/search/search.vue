@@ -8,7 +8,7 @@
 				<view class="colorM font-30">搜索</view>
 			</view>
 			
-			<view class="yx py-3 bB-f5 flex1" v-for="v in 4">
+			<view class="yx py-3 bB-e1 flex1" v-for="v in 4" :key="v" @click="Router.navigateTo({route:{path:'/pages/detail/detail'}})">
 				<image src="../../static/images/home-img1.png" class="yxImg"></image>
 				<view class="line-h flex5 pl-2 flex-1 yxTxt">
 					<view class="font-30">整租·金天地悦睿府</view>
@@ -29,7 +29,7 @@
 	export default {
 		data() {
 			return {
-				
+				Router:this.$Router
 			}
 		},
 		methods: {
