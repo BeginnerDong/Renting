@@ -5,7 +5,7 @@
 		<view class="px-3">
 			<view class="flex1 py-2">
 				<view class="flex" @click="Router.navigateTo({route:{path:'/pages/store/store'}})">
-					<view>大都荟社区</view>
+					<view>{{shopData.name}}</view>
 					<image src="../../static/images/classification-icon.png" class="sj-icon"></image>
 				</view>
 				<view class="p-r flex bg-f5 p-2 ss" @click="Router.navigateTo({route:{path:'/pages/search/search'}})">
@@ -16,26 +16,28 @@
 			
 			<!-- banner -->
 			<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000" indicator-active-color="#fff">
-				<swiper-item>
-						<image src="../../static/images/home-banner.png" ></image>
-				</swiper-item>
+				<block v-for="(item,index) in bannerData" :key="index">
+					<swiper-item>
+							<image :src="item.mainImg[0].url" ></image>
+					</swiper-item>
+				</block>
 			</swiper>
 			
 			<!-- 金刚区 -->
 			<view class="flex2 line-h font-26 my-4">
-				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify'}})">
+				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify?id=1'}})">
 					<image src="../../static/images/home-icon2.png" class="wh100 mb-2"></image>
 					<view>租房</view>
 				</view>
-				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify'}})">
+				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify?id=2'}})">
 					<image src="../../static/images/home-icon3.png" class="wh100 mb-2"></image>
 					<view>二手房</view>
 				</view>
-				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify'}})">
+				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify?id=3'}})">
 					<image src="../../static/images/home-icon4.png" class="wh100 mb-2"></image>
 					<view>办公</view>
 				</view>
-				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify'}})">
+				<view class="flex4" @click="Router.navigateTo({route:{path:'/pages/classify/classify?id=4'}})">
 					<image src="../../static/images/home-icon5.png" class="wh100 mb-2"></image>
 					<view>车位</view>
 				</view>
@@ -44,25 +46,27 @@
 			<!-- 热门 -->
 			<view class="font-34 font-w pt-2 pb-3">热门推荐</view>
 			<view class="flex1">
-				<view class="p-r radius10 overflow-h mb-3 hot" v-for="v in 4">
-					<image src="../../static/images/home-img.png" class="hotImg"></image>
-					<view class="colorf font-30 p-a bottom-0 w-100 py-2 hotTxt">伯顿国际公寓</view>
-				</view>
+				<block v-for="(item,index) in hotData"  :key="index">
+					<view class="p-r radius10 overflow-h mb-3 hot" v-show="index<4" @click="goDetail(item)">
+						<image :src="item.mainImg[0].url" class="hotImg"></image>
+						<view class="colorf font-30 p-a bottom-0 w-100 p-2 avoidOverflow hotTxt">{{item.title}}</view>
+					</view>
+				</block>
 			</view>
 			
 			
 			<!-- 优选房源 -->
 			<view class="font-34 font-w pt-2">优选房源</view>
-			<view class="yx py-3 bB-f5 flex1" v-for="v in 4" @click="Router.navigateTo({route:{path:'/pages/detail/detail'}})">
-				<image src="../../static/images/home-img1.png" class="yxImg"></image>
+			<view class="yx py-3 bB-f5 flex1" v-for="(item,index) in excellentData"  :key="index" 
+			@click="goDetail(item)">
+				<image :src="item.mainImg[0].url" class="yxImg"></image>
 				<view class="line-h flex5 pl-2 flex-1 yxTxt">
-					<view class="font-30">整租·金天地悦睿府</view>
-					<view class="font-24 colorS">100/㎡3室2厅1卫</view>
+					<view class="font-30">{{item.title}}</view>
+					<view class="font-24 colorS">{{item.area}}/㎡ {{item.layout}}</view>
 					<view class="flex">
-						<view class="tag tagB">优选房源</view>
-						<view class="tag tagO">拎包入住</view>
+						<view class="tag" v-for="(c_item,c_index) in item.tagList" :key="c_index">{{c_item.title}}</view>
 					</view>
-					<view class="priceY">3000</view>
+					<view class="priceY">{{item.price}}</view>
 				</view>
 			</view>
 			
@@ -95,20 +99,150 @@
 			return {
 				Router:this.$Router,
 				is_show: false,
+				mainData:[],
+				bannerData:{},
+				hotData:[],
+				excellentData:[],
+				shopData:{}
 			}
 		},
 		onLoad() {
 			const self = this;
-			// self.$Utils.loadAll(['getMainData'], self);
+			self.shopData = uni.getStorageSync('shopData');
+			self.$Utils.loadAll(['getBannerData','getLocation'], self);
+		},
+		onShow() {
+			const self = this;
+			console.log('shopData.title',self.shopData.name)
+			if(uni.getStorageSync('changeShop')){
+				self.shopData = uni.getStorageSync('shopData');
+				self.getMainData(true);
+			};		
+		
 		},
 		methods: {
-			getMainData() {
+			
+			getLocation(){
 				const self = this;
-				console.log('852369')
+				console.log('经纬度')
+				uni.getLocation({
+					type:'wgs84',
+					success(res) {
+						self.getShopData(res.longitude,res.latitude)
+						console.log('经纬度',res.longitude,res.latitude)
+					},
+					fail(res){
+						console.log('fail',res)
+					}
+				})
+			},
+			
+			getShopData(longitude,latitude) {
+				const self = this;
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
-				self.$apis.orderGet(postData, callback);
-			}
+				postData.searchItem = {
+					user_type: 1
+				};
+				postData.order = {
+					distance:'asc',
+					longitude:longitude,
+					latitude:latitude
+				};
+				var callback = function(res){
+					if(res.info.data.length > 0){
+						self.shopData = res.info.data[0];
+						uni.setStorageSync('shopData',res.info.data[0]);
+					};
+					self.getMainData();
+					console.log("shopData",self.shopData)
+					
+				}
+				self.$apis.userInfoGet(postData, callback);
+			},
+			
+			goDetail(item){
+				const self = this;
+				uni.setStorageSync('rentDetail',item)
+				self.Router.navigateTo({route:{path:'/pages/detail/detail'}});
+			},
+			
+
+			
+			getBannerData() {
+				const self = this;
+				const postData = {};
+				// postData.tokenFuncName = 'getProjectToken';
+				postData.searchItem = {
+					thirdapp_id: 2,
+					menu_id: 8
+				};
+				var callback = function(res){
+					if(res.info.data.length > 0){
+						self.bannerData = res.info.data
+					}
+					console.log('banner',self.bannerData)
+					self.$Utils.finishFunc('getBannerData');
+				}
+				self.$apis.articleGet(postData, callback);
+			},
+			
+			getMainData(isNew) {
+				const self = this;
+				
+				if (isNew) {
+					self.mainData = [];
+					self.excellentData = [];
+					self.hotData = [];
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						is_page: true,
+						pagesize: 10
+					}
+				};
+				const postData = {};
+				// postData.tokenFuncName = 'getProjectToken';
+				postData.searchItem = {
+					// menu_id: 1,
+					thirdapp_id: 2,
+					user_type: 1,
+					user_no:uni.getStorageSync('shopData').user_no
+				};
+				postData.getAfter = {
+				 	tagList:{
+				 		tableName:'Label',
+				 		middleKey:'tag',
+				 		key:'id',
+						condition:'in'
+					},
+					facilitiesList:{
+						tableName:'Label',
+						middleKey:'facilities',
+						key:'id',
+						condition:'in'
+					}
+				}
+				var callback = function(res){
+					if(res.info.data.length > 0){
+						self.mainData = res.info.data;
+						for (var i = 0; i < self.mainData.length; i++) {
+							if(self.mainData[i].excellent == 1){
+								 self.excellentData.push(self.mainData[i])
+							}
+							if(self.mainData[i].hot == 1){
+								self.hotData.push(self.mainData[i])
+							}
+						}
+					};
+					uni.removeStorageSync('changeShop');
+					self.$Utils.finishFunc('getLocation');
+				}
+				self.$apis.articleGet(postData, callback);
+			},
+			
+			
+			
 		}
 	};
 </script>

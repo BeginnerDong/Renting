@@ -4,8 +4,12 @@
 		<view class="headBox">
 			<view class="font-36 head":style="{paddingTop:statusBar+'px'}">我的</view>
 			<view class="flex font-32 font-w py-4 px-3">
-				<image src="../../static/images/my-img.png" class="wh110 mr-2"></image>
-				<view>哆啦A梦</view>
+				<view class="wh110 mr-2 radius-5 overflow-h">
+					<open-data type="userAvatarUrl"></open-data>  
+				</view>
+				<view><open-data type="userNickName" lang="zh_CN"></open-data> </view>
+				<!-- <image src="../../static/images/my-img.png" class="wh110 mr-2"></image> -->
+				<!-- <view>哆啦A梦</view> -->
 			</view>
 		</view>
 		

@@ -2,24 +2,27 @@
 	<view>
 		
 		<view class="list">
-			<view class="li" :class="liCurr==0?'on':''" @click="changeLi(0)">租房</view>
-			<view class="li" :class="liCurr==1?'on':''" @click="changeLi(1)">二手房</view>
-			<view class="li" :class="liCurr==2?'on':''" @click="changeLi(2)">办公</view>
-			<view class="li" :class="liCurr==3?'on':''" @click="changeLi(3)">车位</view>
+			<view class="li" :class="liCurr==1?'on':''" @click="changeLi(1)">租房</view>
+			<view class="li" :class="liCurr==2?'on':''" @click="changeLi(2)">二手房</view>
+			<view class="li" :class="liCurr==3?'on':''" @click="changeLi(3)">办公</view>
+			<view class="li" :class="liCurr==4?'on':''" @click="changeLi(4)">车位</view>
 		</view>
 		
-		<view class="yx py-3 mx-3 bB-f5 flex1" v-for="v in 4">
-			<image src="../../static/images/home-img1.png" class="yxImg"></image>
-			<view class="line-h flex5 pl-2 flex-1 yxTxt">
-				<view class="font-30">整租·金天地悦睿府</view>
-				<view class="font-24 colorS">100/㎡3室2厅1卫</view>
-				<view class="flex">
-					<view class="tag tagB">优选房源</view>
-					<view class="tag tagO">拎包入住</view>
+		
+		<block v-for="(item,index) in mainData"  :key="index" @click="goDetail(item)">
+			<view class="yx mx-3 py-3 bB-f5 flex1" v-show="item.menu_id==liCurr">
+				<image :src="item.mainImg[0].url" class="yxImg"></image>
+				<view class="line-h flex5 pl-2 flex-1 yxTxt">
+					<view class="font-30">{{item.title}}</view>
+					<view class="font-24 colorS">{{item.area}}/㎡ {{item.layout}}</view>
+					<view class="flex">
+						<view class="tag" v-for="(c_item,c_index) in item.tagList" :key="c_index">{{c_item.title}}</view>
+					</view>
+					<view class="priceY">{{item.price}}</view>
 				</view>
-				<view class="priceY">3000</view>
 			</view>
-		</view>
+		</block>
+		
 		
 	</view>
 </template>
@@ -28,14 +31,28 @@
 	export default {
 		data() {
 			return {
-				liCurr:0
+				liCurr:1,
+				mainData:[]
 			}
+		},
+		onLoad(){
+			const self = this;
+			self.mainData = self.$Utils.getStorageArray('collectData');
+			console.log('self.mainData',self.mainData);
 		},
 		methods: {
 			changeLi(i){
 				const self = this;
 				self.liCurr = i
-			}
+			},
+			
+			goDetail(item){
+				const self = this;
+				uni.setStorageSync('rentDetail',item)
+				self.Router.navigateTo({route:{path:'/pages/detail/detail'}});
+			},
+			
+			
 		}
 	}
 </script>

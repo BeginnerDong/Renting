@@ -2,6 +2,11 @@
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
+			"permission": {
+			    "scope.userLocation": {
+			      "desc": "定位最近门店" // 高速公路行驶持续后台定位
+			    }
+			  },
 			"style": {
 				"navigationBarTitleText": "首页",//设置页面标题文字
 				"onReachBottomDistance":100

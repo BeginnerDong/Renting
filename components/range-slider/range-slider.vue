@@ -163,7 +163,7 @@ export default {
 		values: function(newVal, oldVal, changedPath) {
 			var that = this;
 			var values = that.values;
-			console.log('refresh', newVal, oldVal);
+			// console.log('refresh', newVal, oldVal);
 			if (that._isValuesValid(newVal) && that._isValuesValid(values)) {
 				if (values[0] != oldVal[0] || values[1] != oldVal[1]) that._refresh();
 			}
