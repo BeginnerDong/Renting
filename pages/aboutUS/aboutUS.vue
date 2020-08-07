@@ -17,7 +17,7 @@
 			<view class="content ql-editor" style="padding:0;" v-html="mainData.content">
 				
 			</view>
-			<image src="../../static/images/about us-img.png" mode="widthFix"></image>
+			<!-- <image src="../../static/images/about us-img.png" mode="widthFix"></image> -->
 		</view>
 		
 	</view>

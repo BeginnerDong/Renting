@@ -202,7 +202,7 @@
 					}
 				};
 				const postData = {};
-				// postData.tokenFuncName = 'getProjectToken';
+				postData.tokenFuncName = 'getProjectToken';
 				postData.searchItem = {
 					// menu_id: 1,
 					thirdapp_id: 2,

@@ -224,9 +224,12 @@
 				self.mainData = uni.getStorageSync('rentDetail')
 				self.facilities(self.mainData.facilitiesList)
 			};
+			console.log('self.isCollect',self.isCollect)
 			self.isCollect = self.$Utils.getStorageArray('collectData', 'id', self.mainData.id);
-				console.log('self.isCollect',self.isCollect)
-			
+			if(self.isCollect.length <= 0 ){
+				self.isCollect = false
+			}
+			console.log('self.isCollect2',self.isCollect)
 		},
 		methods: {
 			

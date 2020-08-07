@@ -45,9 +45,9 @@
 							</view>
 							<view class="right flex-1 bT-e1">
 								<block  v-for="(c_item,c_index) in className[classCurr].con" :key="c_index">
-									<view class="li" @click="searchField(className[c_index].key,c_item,className[classCurr].array[c_index])">
+									<view class="li" @click="searchField(className[classCurr].key,c_item,className[classCurr].array[c_index])">
 										<view>{{c_item}}</view>
-										<image src="../../static/images/classification-icon4.png" class="yes-icon" v-if="searchFieldItem['room']==c_item"></image>
+										<image src="../../static/images/classification-icon4.png" class="yes-icon" v-show="searchFieldItem[className[c_index].key]==c_item"></image>
 									</view>
 								</block>
 							</view>
@@ -83,7 +83,7 @@
 								<view class="flex-1 top">
 									
 									<block  v-for="(item,index) in screen" :key="index">
-										<view class="px-3 py-4 bB-e1" v-show="item.type == classCurr">
+										<view class="px-3 py-4 bB-e1" v-show="item.type ==1&&classCurr==0">
 											<view class="pb-1">{{item.name}}</view>
 											<view class="d-flex flex-wrap">
 												<view class="oo" v-for="(c_item,c_index) in item.tags" :key="c_index"
@@ -94,7 +94,19 @@
 										</view>
 									</block>
 									
-									<view class="px-3 py-4 bB-e1" v-show="classCurr!=4">
+									<block  v-for="(item,index) in screen" :key="index">
+										<view class="px-3 py-4 bB-e1" v-show="item.type == classCurr&&classCurr!=0">
+											<view class="pb-1">{{item.name}}</view>
+											<view class="d-flex flex-wrap">
+												<view class="oo" v-for="(c_item,c_index) in item.tags" :key="c_index"
+												 @click="searchField(item.key,c_item,item.array[c_index])"
+												  :class="searchFieldItem[item.key]==c_item?'on':''"
+												>{{c_item}}</view>
+											</view>
+										</view>
+									</block>
+									
+									<view class="px-3 py-4 bB-e1" v-show="classCurr!=4&&classCurr!=0">
 										<view class="pb-1">房源特色</view>
 										<view class="d-flex flex-wrap">
 											<block v-for="(item,index) in tagData" :key="index">
@@ -140,7 +152,7 @@
 		
 		<view class="fon-30 px-3 pb-1 flex flex-wrap" v-show="classCurr!=0">
 			<block v-for="(item,index) in tagData" :key="index">
-				<view class="sign" v-show="index<4">{{item.title}}</view>
+				<view class="sign">{{item.title}}</view>
 			</block>
 		</view>
 		<view class="h20"></view>
@@ -172,7 +184,7 @@
 				Router:this.$Router,
 				liCurr:0,
 				is_show:false,
-				qtCurr:0,
+				classCurr:0,
 				screen:[
 					{name:'装修',tags:['豪装','精装','中装','简装','毛坯'],type:1,key:'renovation',array:[]},
 					{name:'付款方式',tags:['押一付三','押一付一','押一付二','半年付','年付','其他'],type:1,key:'pay_type',array:[]},
@@ -194,7 +206,7 @@
 					{name:'租房',con:['不限','1室','2室','3室','4室','公寓'],type:1,key:'room',array:[]},
 					{name:'二手房',con:['不限','1室','2室','3室','4室','公寓'],type:2,key:'room',array:[]},
 					{name:'办公',con:['不限','120-150㎡','150-180㎡','180-220㎡','>220㎡','整栋'],type:3,key:'area',array:[[0,9999999999],[120,150],[150,180],[180,220],[220,9999999],'整栋']},
-					{name:'车位',con:['不限','室外停车场','地下停车场'],type:4,key:'ground',array:[]},
+					{name:'车位',con:['不限','室外停车场','地下停车场'],type:4,key:'ground',array:['不限','室外','地下']},
 				],
 				mainData:[],
 				searchItem:{
@@ -263,6 +275,7 @@
 		onLoad(option){
 			const self = this;
 			self.classCurr = option.id;
+			self.inPut(option.id)
 			self.$Utils.loadAll(['getMainData','getTagData'], self);
 		},
 		methods: {
@@ -303,28 +316,29 @@
 			
 			searchField(key,value,array){
 				const self = this;
-				console.log('self.searchItem[key]',self.searchItem[key]);
-				console.log('value',value);
-				console.log('array',array)
+				// console.log('self.searchItem[key]',key);
+				// console.log('value',value);
+				// console.log('array',array,typeof(array) == 'string')
 				if(value&&self.searchItem[key]!=value){
 					if(array&&array.length>0){
-						if(array == '整栋'){
-							self.searchItem[key] = value;
+						if(typeof(array) == 'string'){
+							self.searchItem[key] = array;
+							self.searchFieldItem[key] = value;
 						}else{
 							self.searchItem[key] = ['between',array]
+							self.searchFieldItem[key] = value;
 						}
-						self.searchFieldItem[key] = value;
 						self.getMainData(true);
 					}else{
 						self.searchItem[key] = value;
 						self.searchFieldItem[key] = value;
 						self.getMainData(true);
 					}
-				}else if(self.searchItem[key]==value||self.searchItem[key]=='不限'){
+				}else if(self.searchItem[key]==value||value=='不限'){
 					delete self.searchItem[key];
 					self.searchFieldItem[key] = '';
 					self.getMainData(true);
-				};
+				}
 				// self.is_show = false;
 			},
 			
@@ -338,16 +352,18 @@
 				self.liCurr = i
 			},
 			
-			close(isNew){
+			close(){
 				const self = this;
-				if(isNaN){
-					return
-				}else{
-					self.is_show = false
-				}
+				self.is_show = false
 			},
 			
-			
+			// clear(){
+			// 	const self = this;
+			// 	for(var i=1;i<self.searchFieldItem.length;i++){
+			// 		console.log(self.searchFieldItem.length)
+			// 	}
+			// 	// self.is_show = false
+			// },
 			
 			goDetail(item){
 				const self = this;
@@ -355,9 +371,8 @@
 				self.Router.navigateTo({route:{path:'/pages/detail/detail'}});
 			},
 			
-			changeClass(item,i){
+			inPut(i){
 				const self = this;
-				self.classCurr = i;
 				if(i == 1){
 					self.searchItems.behavior = 1;
 					self.searchItems.type = 3;
@@ -371,6 +386,12 @@
 					delete self.searchItems.behavior;
 					delete self.searchItems.type;
 				}
+			},
+			
+			changeClass(item,i){
+				const self = this;
+				self.classCurr = i;
+				self.inPut(i)
 				self.getTagData();
 				self.getMainData(true);
 			},
@@ -379,19 +400,18 @@
 				const self = this;
 				self.onprice = item;
 				self.priceCurr = index;
-				console.log(index);
+				// console.log(index);
 				
 				if(index>=self.priceArray.length){
 					var priceItem = item
 				}else{
 					var priceItem = self.priceArray[index];
 				};
-				console.log(priceItem)
+				// console.log(priceItem)
 				if(self.searchItem.price&&JSON.stringify(self.searchItem.price[1])==JSON.stringify(priceItem)){
 					return;
 				};
 				self.searchItem.price = ['between',priceItem]
-				// self.getMainData(true);
 			},
 			
 			onPrice(item,index){
@@ -404,19 +424,18 @@
 			getTagData(){
 				const self = this;
 				const postData = {};
-				
 				postData.searchItem = self.$Utils.cloneForm(self.searchItems);
-				// postData.paginate = {
-				// 	count: 0,
-				// 	currentPage: 1,
-				// 	is_page: true,
-				// 	pagesize: 4
-				// };
+				postData.paginate = {
+					count: 0,
+					currentPage: 1,
+					is_page: true,
+					pagesize: 4
+				};
 				var callback = function(res){
 					if(res.info.data.length > 0){
 						self.tagData = res.info.data;
 					}
-					console.log('tagData',self.tagData)
+					// console.log('tagData',self.tagData)
 					self.$Utils.finishFunc('getTagData');
 				}
 				self.$apis.labelGet(postData, callback);
@@ -465,7 +484,7 @@
 					if(res.info.data.length > 0){
 						self.mainData = res.info.data;
 					}
-					console.log('mainData',res)
+					// console.log('mainData',res)
 					self.$Utils.finishFunc('getMainData');
 				}
 				self.$apis.articleGet(postData, callback);
