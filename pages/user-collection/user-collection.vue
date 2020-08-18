@@ -9,14 +9,15 @@
 		</view>
 		
 		
-		<block v-for="(item,index) in mainData"  :key="index" @click="goDetail(item)">
-			<view class="yx mx-3 py-3 bB-f5 flex1" v-show="item.menu_id==liCurr">
+		<block v-for="(item,index) in mainData"  :key="index">
+			<view class="yx mx-3 py-3 bB-f5 flex1" v-show="item.menu_id==liCurr" @click="goDetail(item)">
 				<image :src="item.mainImg[0].url" class="yxImg"></image>
 				<view class="line-h flex5 pl-2 flex-1 yxTxt">
 					<view class="font-30">{{item.title}}</view>
 					<view class="font-24 colorS">{{item.area}}/㎡ {{item.layout}}</view>
 					<view class="flex">
-						<view class="tag" v-for="(c_item,c_index) in item.tagList" :key="c_index">{{c_item.title}}</view>
+						<view class="tag" v-show="c_index<4"
+						v-for="(c_item,c_index) in item.tagList" :key="c_index">{{c_item.title}}</view>
 					</view>
 					<view class="priceY">{{item.price}}</view>
 				</view>
@@ -31,6 +32,7 @@
 	export default {
 		data() {
 			return {
+				Router:this.$Router,
 				liCurr:1,
 				mainData:[]
 			}
@@ -48,6 +50,7 @@
 			
 			goDetail(item){
 				const self = this;
+				console.log('item',item)
 				uni.setStorageSync('rentDetail',item)
 				self.Router.navigateTo({route:{path:'/pages/detail/detail'}});
 			},

@@ -8,11 +8,11 @@
 		
 		<view class="flex1 mx-3 py-3 bB-e1" @click="Router.navigateTo({route:{path:'/pages/user-function/user-function'}})">
 			<view class="flex-1 pl-2">功能异常</view>
-			<image src="../../static/images/the problem-icon3.png" class="R-icon"></image>
+			<image src="../../static/images/the-problem-icon3.png" class="R-icon"></image>
 		</view>
 		<view class="flex1 mx-3 py-3 bB-e1" @click="Router.navigateTo({route:{path:'/pages/user-submitQuestion/user-submitQuestion?id=-1'}})">
 			<view class="flex-1 pl-2">产品建议</view>
-			<image src="../../static/images/the problem-icon3.png" class="R-icon"></image>
+			<image src="../../static/images/the-problem-icon3.png" class="R-icon"></image>
 		</view>
 		
 	</view>

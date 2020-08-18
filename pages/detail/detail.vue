@@ -81,13 +81,13 @@
 					<view class="flex1 flex-wrap" v-show="mainData.menu_id==1||mainData.menu_id==4">
 						<view class="w-50 pt-4" v-show="mainData.menu_id==4"><text class="color6">单价：</text>{{mainData.unit_price}}/㎡/天</view>
 						<view class="w-50 pt-4" v-show="mainData.menu_id==4"><text class="color6">区域：</text>{{mainData.region}}</view>
-						<view class="w-50 pt-4" v-show="mainData.menu_id==1"><text class="color6">付款：</text>{{mainData.layout}}</view>
+						<view class="w-50 pt-4" v-show="mainData.menu_id==1"><text class="color6">付款：</text>{{mainData.pay_type}}</view>
 						<view class="w-50 pt-4" v-show="mainData.menu_id==1"><text class="color6">电梯：</text>{{mainData.elevator}}</view>
 						<view class="w-50 pt-4"><text class="color6">小区：</text>{{mainData.village}}</view>
 						
 						<view class="flex colorM pt-4" @click="Router.navigateTo({route:{path:'/pages/detail-estate/detail-estate'}})">
 							<view>查看小区</view>
-							<image src="../../static/images/the problem-icon3.png" class="R-icon ml-1"></image>
+							<image src="../../static/images/the-problem-icon3.png" class="R-icon ml-1"></image>
 						</view>
 					</view>
 					
@@ -110,7 +110,7 @@
 						
 						<view class="flex colorM pt-4" @click="Router.navigateTo({route:{path:'/pages/detail-estate/detail-estate'}})">
 							<view>查看小区</view>
-							<image src="../../static/images/the problem-icon3.png" class="R-icon ml-1"></image>
+							<image src="../../static/images/the-problem-icon3.png" class="R-icon ml-1"></image>
 						</view>
 					</view>
 					
@@ -143,7 +143,7 @@
 						<view>{{mainData.contact}}</view>
 						<view class="font-24 color6 pt-2">{{mainData.shop}}</view>
 					</view>
-					<image src="../../static/images/details-icon.png" class="dh-icon"></image>
+					<image src="../../static/images/details-icon.png" class="dh-icon" @click="callPhone"></image>
 				</view>
 			</view>
 			<view class="h20"></view>
@@ -179,12 +179,12 @@
 					<image src="../../static/images/details-icon3.png" class="wh32 mb-1" v-else></image>
 					<view>收藏</view>
 				</view>
-				<view class="flex4 pl-5 pr-2">
+				<button class="flex4 pl-5 pr-2" open-type="share">
 					<image src="../../static/images/details-icon2.png" class="wh30 mb-1"></image>
 					<view>分享</view>
-				</view>
+				</button>
 			</view>
-			<view class="zxBtn">电话咨询</view>
+			<view class="zxBtn" @click="callPhone">电话咨询</view>
 		</view>
 		
 	</view>
@@ -222,16 +222,32 @@
 			const self = this;
 			if(uni.getStorageSync('rentDetail')){
 				self.mainData = uni.getStorageSync('rentDetail')
+				console.log('rentDetail',self.mainData)
 				self.facilities(self.mainData.facilitiesList)
 			};
 			console.log('self.isCollect',self.isCollect)
 			self.isCollect = self.$Utils.getStorageArray('collectData', 'id', self.mainData.id);
-			if(self.isCollect.length <= 0 ){
-				self.isCollect = false
+			if(self.isCollect){
+				if(self.isCollect.length <= 0 ){
+					self.isCollect = false
+				}
 			}
 			console.log('self.isCollect2',self.isCollect)
 		},
 		methods: {
+			
+			callPhone(){
+				const self = this;
+				uni.makePhoneCall({
+				  phoneNumber: self.mainData.phone, 
+					success: (res) => {
+						console.log('调用成功!')	
+					},
+					fail: (res) => {
+						console.log('调用失败!')
+					}
+				});
+			},
 			
 			save(){
 				const self = this;
@@ -240,9 +256,11 @@
 				if(self.isCollect){
 					self.$Utils.delStorageArray('collectData','id', self.mainData.id);
 					self.isCollect = false;
+					self.$Utils.showToast('取消收藏','none')
 				}else{
 					self.$Utils.setStorageArray('collectData',self.mainData, 'id', 99999999);
 					self.isCollect = true;
+					self.$Utils.showToast('收藏成功','none')
 				}
 				
 			},
@@ -285,4 +303,6 @@ swiper,swiper-item{width: 100%;height: 550rpx;}
 .pName{width: 180rpx;height: 90rpx;line-height: 90rpx;text-align: center;}
 .pBto{bottom: 0;background-color: rgba(0,0,0,0.5);line-height: 80rpx;}
 .zxBtn{line-height: 100rpx;background-color: #2BA5FA;width: 260rpx;color: #fff;text-align: center;}
+
+button{font-size: 24rpx;line-height: 1;background-color: #fff;color: #666;}
 </style>

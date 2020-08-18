@@ -2,11 +2,6 @@
 	<view>
 		
 		<view class="px-3">
-			<view class="p-r flex py-3">
-				<image src="../../static/images/home-icon1.png" class="ss-icon ml-2"></image>
-				<input type="text" v-model="title" placeholder="请输入小区名/完整房源编号" />
-				<view class="colorM font-30" @click="getMainData(true)">搜索</view>
-			</view>
 			
 			<view class="yx py-3 bB-f5 flex1" v-for="(item,index) in mainData"  :key="index"
 			@click="goDetail(item)">
@@ -32,17 +27,13 @@
 			return {
 				Router:this.$Router,
 				mainData:[],
-				isLoadAll:false,
-				title:'',
-				searchItem:{
-					user_no:''
-				}
+				isLoadAll:false
 			}
 		},
-		onLoad(option){
+		onLoad() {
 			const self = this;
-			self.searchItem.user_no = uni.getStorageSync('shopData').user_no;
 			self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+			self.$Utils.loadAll(['getMainData'], self);
 		},
 		onReachBottom(){
 			const self = this;
@@ -59,21 +50,26 @@
 				self.Router.navigateTo({route:{path:'/pages/detail/detail'}});
 			},
 			
-			search(){
-				const self = this;
-				self.getMainData(true)
-			},
-			
 			getMainData(isNew) {
 				const self = this;
-				const postData = {};
 				if (isNew) {
 					self.mainData = [];
-					self.paginate = self.$Utils.cloneForm(self.$AssetsConfig.paginate);
+					self.paginate = {
+						count: 0,
+						currentPage: 1,
+						is_page: true,
+						pagesize: 10
+					}
 				};
-				postData.title = self.title;
-				postData.searchItem = self.$Utils.cloneForm(self.searchItem);
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken';
 				postData.paginate = self.$Utils.cloneForm(self.paginate);
+				postData.searchItem = {
+					thirdapp_id: 2,
+					user_type: 1,
+					user_no:uni.getStorageSync('shopData').user_no,
+					hot:1
+				};
 				postData.getAfter = {
 				 	tagList:{
 				 		tableName:'Label',
@@ -90,21 +86,21 @@
 				}
 				var callback = function(res){
 					if(res.info.data.length > 0){
-						self.mainData = res.info.data;
+						self.mainData.push.apply(self.mainData,res.info.data)
+						
 					}else{
-						self.isLoadAll = true;
+						self.isLoadAll = true
 					};
-					console.log('mainData',res)
+					console.log('mainData',self.mainData)
 					self.$Utils.finishFunc('getMainData');
 				}
-				self.$apis.searchInfo(postData, callback);
+				self.$apis.articleGet(postData, callback);
 			},
+			
 		}
 	}
 </script>
+
 <style>
-page{background-color: #f5f5f5;}
-</style>
-<style scoped>
 
 </style>

@@ -10,8 +10,8 @@
 				</view>
 				<view class="color6">{{item.address}}</view>
 			</view>
-			<image src="../../static/images/the problem-icon1.png" class="wh32" v-if="user_no==item.user_no"></image>
-			<image src="../../static/images/the problem-icon2.png" class="wh32" v-else></image>
+			<image src="../../static/images/the-problem-icon1.png" class="wh32" v-if="user_no==item.user_no"></image>
+			<image src="../../static/images/the-problem-icon2.png" class="wh32" v-else></image>
 		</view>
 		
 	</view>

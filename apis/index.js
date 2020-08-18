@@ -30,6 +30,31 @@ export default {
 		};
 		http.HTTP(allParams);
 	},
+	
+	messageAdd(param, callback) {
+		var allParams = {
+			url: 'Common/Message/add',
+			type: 'post',
+			data: param,
+			sCallback: function(data) {
+				callback && callback(data);
+			}
+		};
+		http.HTTP(allParams);
+	},
+	
+	searchInfo(param, callback) {
+	
+		var allParams = {
+			url: 'Project/Solely/searchInfo',
+			type: 'post',
+			data: param,
+			sCallback: function(data) {
+				callback && callback(data);
+			}
+		};
+		http.HTTP(allParams);
+	},
 
 
 	bindShop(param, callback) {

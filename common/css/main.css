@@ -120,6 +120,6 @@ input{font-size: 24rpx;flex: 1;padding-left: 20rpx;}
 /* 标签 */
 .tag{font-size: 22rpx;line-height: 32rpx;border-radius: 4rpx;display: inline-block;padding: 0 4rpx;margin-right: 10rpx;background-color: #FDE8D9;color: #FF8629;}
 .tag:nth-child(1){background-color: #D1EFFF;color: #31B2F9;}
-/* .tag:nth-child(n+1){} */
+.tag:nth-child(4){margin: 0;}
 
 .sign{font-size: 24rpx;width: 140rpx;line-height: 50rpx;background-color: #F5F9FC;color: #646465;border-radius: 5rpx;text-align: center;}

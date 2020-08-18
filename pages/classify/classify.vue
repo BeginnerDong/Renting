@@ -4,7 +4,8 @@
 		
 		<view class="z100">
 			<view class="px-3 pt-2 bg-white">
-				<view class="p-r flex bg-f5 z100 ss">
+				<view class="p-r flex bg-f5 z100 ss"
+				@click="Router.navigateTo({route:{path:'/pages/search/search'}})">
 					<image src="../../static/images/home-icon1.png" class="ss-icon ml-2"></image>
 					<input type="text" value="" placeholder="请输入小区名/完整房源编号" />
 				</view>
@@ -39,15 +40,17 @@
 					<!-- 分类 -->
 					<view v-show="liCurr==0" class="d-flex">
 							<view class="left">
-								<view class="li" @click="changeClass(item,index)" :class="classCurr==index?'on':''"  v-for="(item,index) in className" :key="index" >
+								<view class="li" @click="changeClass(priceCss,index)" :class="classCurr==index?'on':''"  v-for="(item,index) in className" :key="index" >
 									{{item.name}}
 								</view>
 							</view>
 							<view class="right flex-1 bT-e1">
 								<block  v-for="(c_item,c_index) in className[classCurr].con" :key="c_index">
-									<view class="li" @click="searchField(className[classCurr].key,c_item,className[classCurr].array[c_index])">
+									<view class="li" 
+									@click="searchField(className[classCurr].key, c_item, className[classCurr].array[c_index], c_index)">
 										<view>{{c_item}}</view>
-										<image src="../../static/images/classification-icon4.png" class="yes-icon" v-show="searchFieldItem[className[c_index].key]==c_item"></image>
+										<image src="../../static/images/classification-icon4.png" class="yes-icon" v-if="rightCurr==c_index"></image>
+										<!-- v-if="searchFieldItem[className[c_index].key]==c_item" -->
 									</view>
 								</block>
 							</view>
@@ -61,18 +64,18 @@
 								<text>{{ rangeValues[0] }}</text>~<text>{{ rangeValues[1] }}</text>
 							</view>
 							<view class="py-3">				<!-- 区域选择 -->
-									<RangeSlider
-										:width="slideWidth"
-										:height="slideHeight"
-										:blockSize="slideBlockSize"
-										:min="slideMin"
-										:max="slideMax"
-										:values="rangeValues"
-										:step="step"
-										:liveMode="isLiveMode"
-										@rangechange="onRangeChange"
-									>
-									</RangeSlider>
+								<RangeSlider
+									:width="slideWidth"
+									:height="slideHeight"
+									:blockSize="slideBlockSize"
+									:min="slideMin"
+									:max="slideMax"
+									:values="rangeValues"
+									:step="step"
+									:liveMode="isLiveMode"
+									@rangechange="onRangeChange"
+								>
+								</RangeSlider>
 							</view>
 						</view>
 						<view class="Mgb colorf py-3" @click="onPrice(onprice,priceCurr)">确定</view>
@@ -87,13 +90,11 @@
 											<view class="pb-1">{{item.name}}</view>
 											<view class="d-flex flex-wrap">
 												<view class="oo" v-for="(c_item,c_index) in item.tags" :key="c_index"
-												 @click="searchField(item.key,c_item,item.array[c_index])"
-												  :class="searchFieldItem[item.key]==c_item?'on':''"
-												>{{c_item}}</view>
+												  @click="searchField(item.key, c_item, item.array[c_index])"
+												  :class="searchFieldItem[item.key]==c_item?'on':''">{{c_item}}</view>
 											</view>
 										</view>
 									</block>
-									
 									<block  v-for="(item,index) in screen" :key="index">
 										<view class="px-3 py-4 bB-e1" v-show="item.type == classCurr&&classCurr!=0">
 											<view class="pb-1">{{item.name}}</view>
@@ -119,8 +120,9 @@
 								</view>
 									
 								<view class="flex shadow-lg bto">
-									<view class="bg-f5 flex-1" @click="close">清除</view>
-									<view class="Mgb colorf ooBtn" @click="onBefore(priceCss)">确定</view>
+									<view class="bg-f5 flex-1" @click="clear(priceCss)">清除</view>
+									<!-- <view class="Mgb colorf ooBtn" @click="onBefore(priceCss)">确定</view> -->
+									<view class="Mgb colorf ooBtn" @click="close">确定</view>
 								</view>
 						</view>
 					</view>
@@ -149,10 +151,10 @@
 		</view>
 		<view class="bg-mask" style="z-index: 9;margin-top: 100rpx;" v-show="is_show && liCurr!=2" @click="close"></view> 
 		
-		
-		<view class="fon-30 px-3 pb-1 flex flex-wrap" v-show="classCurr!=0">
+		<!-- 展示标签 -->
+		<view class="font-30 px-3 pb-1 flex1" v-show="classCurr!=0&&classCurr!=4">
 			<block v-for="(item,index) in tagData" :key="index">
-				<view class="sign">{{item.title}}</view>
+				<view class="sign" v-show="index<4">{{item.title}}</view>
 			</block>
 		</view>
 		<view class="h20"></view>
@@ -166,7 +168,8 @@
 				<view class="font-30">{{item.title}}</view>
 				<view class="font-24 colorS">{{item.area}}/㎡ {{item.layout}}</view>
 				<view class="flex">
-					<view class="tag" v-for="(c_item,c_index) in item.tagList" :key="c_index" >{{c_item.title}}</view>
+					<view class="tag" v-show="c_index<4"
+					v-for="(c_item,c_index) in item.tagList" :key="c_index" >{{c_item.title}}</view>
 				</view>
 				<view class="priceY">{{item.price}}</view>
 			</view>
@@ -185,6 +188,7 @@
 				liCurr:0,
 				is_show:false,
 				classCurr:0,
+				rightCurr:0,
 				screen:[
 					{name:'装修',tags:['豪装','精装','中装','简装','毛坯'],type:1,key:'renovation',array:[]},
 					{name:'付款方式',tags:['押一付三','押一付一','押一付二','半年付','年付','其他'],type:1,key:'pay_type',array:[]},
@@ -193,11 +197,11 @@
 					{name:'房型',tags:['一室','两室','三室','四室','五室','五室以上'],type:2,key:'room',array:[]},
 					{name:'建筑面积',tags:['50㎡以下','50-80㎡','80-110㎡','110-150㎡','150-200㎡','200㎡以上'],type:2,key:'area',array:[[0,50],[50,80],[80,110],[110,150],[150,200],[200,999999]]},
 					{name:'朝向',tags:['东','南','西','北','东南','东北','西南','西北','南北通透'],type:2,key:'orientation',array:[]},
-					{name:'价格',tags:['不限','3千/月','3-5千/月','5-8千/月','8千-1万/月','1万/月以上'],type:3,key:'price',array:[[0,99999999999999],[0,3000],[3000,5000],[5000,8000],[8000,10000],[10000,999999999]]},
+					{name:'价格',tags:['不限','3千/月','3-5千/月','5-8千/月','8千-1万/月','1万/月以上'],type:3,key:'price',array:[[0,9999999999],[0,3000],[3000,5000],[5000,8000],[8000,10000],[10000,999999999]]},
 					{name:'房间',tags:['不限','整栋租赁','带办公家具','整层租赁','独立会议室'],type:3,key:'room',array:[]},
 					{name:'建筑面积',tags:['<100㎡','100-300㎡','300-500㎡','500-1000㎡','1000㎡以上'],type:3,key:'area',array:[[0,100],[100,300],[300,500],[500,1000],[1000,999999999]]},
 					{name:'装修',tags:['不限','豪华装修','精装修','简单装修','毛坯房'],type:3,key:'renovation',array:[]},
-					{name:'类别',tags:['不限','地下','室外'],type:4,key:'ground',array:[]},
+					{name:'类别',tags:['不限','室外','地下'],type:4,key:'ground',array:[]},
 					{name:'付款方式',tags:['不限','月付','季付','年付'],type:4,key:'pay_type',array:[]}
 				],
 				priceSection:['<=800','800~1500','1500~2400','5000~8000','>=8000'],
@@ -220,7 +224,7 @@
 					renovation:'',      //装修
 					price:'',         //价格
 					area:'',      //面积
-					ground:'',     //类别
+					ground:'',     //车位类别
 					pay_type:''      //付款方式
 				},
 				classCurr:0,
@@ -247,6 +251,7 @@
 				slideMax: 8500,     //slider最大值
 				isLiveMode: true,     //是否刷新数值
 				step: 100,      //步数
+				
 				order:{
 					'price':'',
 					'create_time':''
@@ -266,7 +271,8 @@
 				  condition:'in',
 				},
 				priceCss:false,
-				getBefore:{}
+				getBefore:{},
+				sxArray:''
 			}
 		},
 		components:{
@@ -292,13 +298,7 @@
 					self.getBefore.tag = self.tag;
 					self.priceCss = id
 				};
-			},
-			
-			onBefore(id){
-				const self = this;
-				self.beforeSearch(id)
-			  self.getMainData(true);
-				self.is_show = false;
+				self.getMainData(true);
 			},
 			
 			change(index){
@@ -314,11 +314,11 @@
 				self.is_show = false;
 			},
 			
-			searchField(key,value,array){
+			searchField(key,value,array,index){
 				const self = this;
 				// console.log('self.searchItem[key]',key);
 				// console.log('value',value);
-				// console.log('array',array,typeof(array) == 'string')
+				// console.log('array',array,typeof(array))
 				if(value&&self.searchItem[key]!=value){
 					if(array&&array.length>0){
 						if(typeof(array) == 'string'){
@@ -327,19 +327,30 @@
 						}else{
 							self.searchItem[key] = ['between',array]
 							self.searchFieldItem[key] = value;
+							self.sxArray = array
 						}
 						self.getMainData(true);
 					}else{
-						self.searchItem[key] = value;
-						self.searchFieldItem[key] = value;
+						if(value == '不限'){
+							delete self.searchItem[key];
+							self.searchFieldItem[key] = value;
+						}else{
+							self.searchItem[key] = value;
+							self.searchFieldItem[key] = value;
+						}
 						self.getMainData(true);
 					}
-				}else if(self.searchItem[key]==value||value=='不限'){
+				}else if(self.searchItem[key]==value){
 					delete self.searchItem[key];
-					self.searchFieldItem[key] = '';
+					delete self.searchFieldItem[key];
 					self.getMainData(true);
 				}
-				// self.is_show = false;
+				self.right(index)
+			},
+			
+			right(index){
+				const self = this;
+				self.rightCurr = index;
 			},
 			
 			changeLi(i){
@@ -354,16 +365,25 @@
 			
 			close(){
 				const self = this;
-				self.is_show = false
+				self.is_show = false;
 			},
 			
-			// clear(){
-			// 	const self = this;
-			// 	for(var i=1;i<self.searchFieldItem.length;i++){
-			// 		console.log(self.searchFieldItem.length)
-			// 	}
-			// 	// self.is_show = false
-			// },
+			clear(id){
+				const self = this;
+				self.searchFieldItem = {};
+				self.searchItem = {};
+				self.searchItems = {};
+				self.searchItem = {
+					thirdapp_id: 2,
+					user_type: 1,
+					user_no:uni.getStorageSync('shopData').user_no
+				};
+				self.inPut(self.liCurr)
+				self.getMainData(true)
+				self.beforeSearch(id)
+				self.is_show = false
+				// self.getTagData();
+			},
 			
 			goDetail(item){
 				const self = this;
@@ -388,11 +408,21 @@
 				}
 			},
 			
-			changeClass(item,i){
+			changeClass(tagLi,i){
 				const self = this;
+				self.rightCurr = 0;
 				self.classCurr = i;
+				self.searchFieldItem = {};
+				self.searchItems = {};
+				self.searchItem = {};
+				self.searchItem = {
+					thirdapp_id: 2,
+					user_type: 1,
+					user_no:uni.getStorageSync('shopData').user_no
+				};
 				self.inPut(i)
 				self.getTagData();
+				// self.beforeSearch(tagLi);
 				self.getMainData(true);
 			},
 			
@@ -425,12 +455,12 @@
 				const self = this;
 				const postData = {};
 				postData.searchItem = self.$Utils.cloneForm(self.searchItems);
-				postData.paginate = {
-					count: 0,
-					currentPage: 1,
-					is_page: true,
-					pagesize: 4
-				};
+				// postData.paginate = {
+				// 	count: 0,
+				// 	currentPage: 1,
+				// 	is_page: true,
+				// 	pagesize: 4
+				// };
 				var callback = function(res){
 					if(res.info.data.length > 0){
 						self.tagData = res.info.data;
@@ -478,6 +508,12 @@
 				 		middleKey:'tag',
 				 		key:'id',
 						condition:'in'
+					},
+					facilitiesList:{
+						tableName:'Label',
+						middleKey:'facilities',
+						key:'id',
+						condition:'in'
 					}
 				}
 				var callback = function(res){
@@ -503,7 +539,7 @@
 <style scoped>
 .ss{height: 66rpx;border-radius: 33rpx;}
 .w140{width: 140rpx;}
-.sign{margin-right: 43rpx;margin-bottom: 20rpx;}
+.sign{margin-bottom: 20rpx;width: auto;padding: 0 15rpx;min-width: 140rpx;}
 .sign:nth-child(4n){margin-right: 0;}
 .h20{height: 20rpx;background-color: #F5F9FC;}
 

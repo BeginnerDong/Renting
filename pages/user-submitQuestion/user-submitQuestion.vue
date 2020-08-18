@@ -3,14 +3,14 @@
 		
 		<view class="py-3 bB-e1">{{title}}</view>
 		<view class="font-24 color9 py-3 bB-e1">
-			<textarea value="" v-model="submitData.content" placeholder="请填写10个字以上的问题以便我们提供更好的帮助" />
-			<view class="text-right">0/200</view>
+			<textarea maxlength="200" value="" v-model="submitData.content" placeholder="请填写10个字以上的问题以便我们提供更好的帮助" />
+			<view class="text-right">{{submitData.content.length}}/200</view>
 		</view>
 		<view class="py-3 bB-e1">
 			<view>截图（{{submitData.mainImg.length}}/4）</view>
 			<view class="flex flex-wrap imgBox">
 				<image v-for="(item,index) in submitData.mainImg" :key="index" :src="item.url" class="wh120 mt-3 mr-2"></image>
-				<image @click="upLoadImg('mainImg')" src="../../static/images/the problem-icon.png" class="wh120 mt-3 mr-2" v-if="submitData.mainImg.length<4"></image>
+				<image @click="upLoadImg('mainImg')" src="../../static/images/the-problem-icon.png" class="wh120 mt-3 mr-2" v-if="submitData.mainImg.length<4"></image>
 			</view>
 		</view>
 		<view class="py-3 bB-e1 flex1 mb-2">
@@ -19,8 +19,8 @@
 		</view>
 		
 		<view class="flex0 font-24 color6 pt-5 mt-5" @click="Agree">
-			<image src="../../static/images/the problem-icon1.png" class="wh28 mr-1" v-if="agree"></image>
-			<image src="../../static/images/the problem-icon2.png" class="wh28 mr-1" v-else></image>
+			<image src="../../static/images/the-problem-icon1.png" class="wh28 mr-1" v-if="agree"></image>
+			<image src="../../static/images/the-problem-icon2.png" class="wh28 mr-1" v-else></image>
 			<view>允许开发者48小时内通过客服消息联系我</view>
 		</view>
 		<view class="btnAuto" @click="agreeSubmit">提交</view>
@@ -73,16 +73,20 @@
 			Agree(){
 				const self = this;
 				self.agree = !self.agree;
+				
 			},
 			
 			agreeSubmit(){
 				const self = this;
-				if(self.agree){
-					self.submit()
+				console.log(self.agree)
+				if(self.submitData.content == ''){
+					self.$Utils.showToast('请填写您所遇到的问题', 'none')
 				}else if(self.submitData.phone == ''){
 					self.$Utils.showToast('请填写联系方式', 'none')
-				}else{
+				}else if(self.agree){
 					self.$Utils.showToast('请允许客服人员联系您', 'none')
+				}else{
+					self.submit()
 				}
 			},
 			
@@ -126,7 +130,6 @@
 				};				
 				uni.chooseImage({
 					count: 1,
-					sourceType:['camera'],
 					success: function(res) {
 						console.log(res);
 						var tempFilePaths = res.tempFilePaths[0];

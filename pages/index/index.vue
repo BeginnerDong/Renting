@@ -47,7 +47,8 @@
 			<view class="font-34 font-w pt-2 pb-3">热门推荐</view>
 			<view class="flex1">
 				<block v-for="(item,index) in hotData"  :key="index">
-					<view class="p-r radius10 overflow-h mb-3 hot" v-show="index<4" @click="goDetail(item)">
+					<view class="p-r radius10 overflow-h mb-3 hot" v-show="index<4"
+					@click="Router.navigateTo({route:{path:'/pages/hot/hot'}})">
 						<image :src="item.mainImg[0].url" class="hotImg"></image>
 						<view class="colorf font-30 p-a bottom-0 w-100 p-2 avoidOverflow hotTxt">{{item.title}}</view>
 					</view>
@@ -63,8 +64,8 @@
 				<view class="line-h flex5 pl-2 flex-1 yxTxt">
 					<view class="font-30">{{item.title}}</view>
 					<view class="font-24 colorS">{{item.area}}/㎡ {{item.layout}}</view>
-					<view class="flex">
-						<view class="tag" v-for="(c_item,c_index) in item.tagList" :key="c_index">{{c_item.title}}</view>
+					<view class="flex flex-wrap">
+						<view class="tag" v-for="(c_item,c_index) in item.tagList" :key="c_index" v-show="c_index<4">{{c_item.title}}</view>
 					</view>
 					<view class="priceY">{{item.price}}</view>
 				</view>
@@ -108,17 +109,21 @@
 		},
 		onLoad() {
 			const self = this;
+			if(uni.getStorageSync('shopData')){
+				self.getBannerData();
+				self.getMainData(true)
+			}else{
+				self.$Utils.loadAll(['getBannerData','getLocation'], self);
+			}
 			self.shopData = uni.getStorageSync('shopData');
-			self.$Utils.loadAll(['getBannerData','getLocation'], self);
+			// self.getLocation();
 		},
 		onShow() {
 			const self = this;
-			console.log('shopData.title',self.shopData.name)
 			if(uni.getStorageSync('changeShop')){
 				self.shopData = uni.getStorageSync('shopData');
 				self.getMainData(true);
-			};		
-		
+			};
 		},
 		methods: {
 			
@@ -133,6 +138,11 @@
 					},
 					fail(res){
 						console.log('fail',res)
+						setTimeout(function(){
+							self.$Utils.showToast('检查您的定位是否打开', 'none')
+						},2000)
+						self.getShopData(0,0)
+						self.$Utils.finishFunc('getLocation');
 					}
 				})
 			},
@@ -181,7 +191,7 @@
 					if(res.info.data.length > 0){
 						self.bannerData = res.info.data
 					}
-					console.log('banner',self.bannerData)
+					// console.log('banner',self.bannerData)
 					self.$Utils.finishFunc('getBannerData');
 				}
 				self.$apis.articleGet(postData, callback);
@@ -194,12 +204,12 @@
 					self.mainData = [];
 					self.excellentData = [];
 					self.hotData = [];
-					self.paginate = {
-						count: 0,
-						currentPage: 1,
-						is_page: true,
-						pagesize: 10
-					}
+					// self.paginate = {
+					// 	count: 0,
+					// 	currentPage: 1,
+					// 	is_page: true,
+					// 	pagesize: 10
+					// }
 				};
 				const postData = {};
 				postData.tokenFuncName = 'getProjectToken';
