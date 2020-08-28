@@ -19,8 +19,8 @@
 		</view>
 		
 		<view class="flex0 font-24 color6 pt-5 mt-5" @click="Agree">
-			<image src="../../static/images/the-problem-icon1.png" class="wh28 mr-1" v-if="agree"></image>
-			<image src="../../static/images/the-problem-icon2.png" class="wh28 mr-1" v-else></image>
+			<image src="../../static/images/the-problem-icon2.png" class="wh28 mr-1" v-if="agree"></image>
+			<image src="../../static/images/the-problem-icon1.png" class="wh28 mr-1" v-else></image>
 			<view>允许开发者48小时内通过客服消息联系我</view>
 		</view>
 		<view class="btnAuto" @click="agreeSubmit">提交</view>
@@ -32,7 +32,7 @@
 	export default {
 		data() {
 			return {
-				agree:false,
+				agree:true,
 				id:-1,
 				title:'产品建议',
 				submitData:{
@@ -86,7 +86,12 @@
 				}else if(self.agree){
 					self.$Utils.showToast('请允许客服人员联系您', 'none')
 				}else{
-					self.submit()
+					var reg = /^1[3456789]\d{9}$/
+					if(reg.test(self.submitData.phone)){
+						self.submit()
+					}else{
+						self.$Utils.showToast('电话号码格式错误','none')
+					}
 				}
 			},
 			
