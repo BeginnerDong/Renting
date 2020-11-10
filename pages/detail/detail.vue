@@ -61,7 +61,7 @@
 				</view>
 				
 				<view class="flex4">
-					<view class="font-32 colorR font-w pb-2">20㎡</view>
+					<view class="font-32 colorR font-w pb-2">{{mainData.area}}㎡</view>
 					<view>建筑面积</view>
 				</view>
 				<!-- 车位展示 -->
@@ -85,7 +85,7 @@
 						<view class="w-50 pt-4" v-show="mainData.menu_id==1"><text class="color6">电梯：</text>{{mainData.elevator}}</view>
 						<view class="w-50 pt-4"><text class="color6">小区：</text>{{mainData.village}}</view>
 						
-						<view class="flex colorM pt-4" @click="Router.navigateTo({route:{path:'/pages/detail-estate/detail-estate'}})">
+						<view class="flex colorM pt-4" @click="Router.navigateTo({route:{path:'/pages/detail-estate/detail-estate?id='+mainData.id}})">
 							<view>查看小区</view>
 							<image src="../../static/images/the-problem-icon3.png" class="R-icon ml-1"></image>
 						</view>
@@ -108,7 +108,7 @@
 						<view class="w-50 pt-4"><text class="color6">权属：</text>{{mainData.ownership}}</view>
 						<view class="w-50 pt-4"><text class="color6">小区：</text>{{mainData.village}}</view>
 						
-						<view class="flex colorM pt-4" @click="Router.navigateTo({route:{path:'/pages/detail-estate/detail-estate'}})">
+						<view class="flex colorM pt-4" @click="Router.navigateTo({route:{path:'/pages/detail-estate/detail-estate?id='+mainData.id}})">
 							<view>查看小区</view>
 							<image src="../../static/images/the-problem-icon3.png" class="R-icon ml-1"></image>
 						</view>

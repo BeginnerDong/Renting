@@ -20,14 +20,30 @@
 	export default {
 		data() {
 			return {
-				mainData:{}
+				mainData:{},
+				searchItem:{}
 			}
 		},
-		onLoad(){
+		onLoad(options){
 			const self = this;
-			self.mainData = uni.getStorageSync('rentDetail')
+			// self.mainData = uni.getStorageSync('rentDetail')
+			self.searchItem.id = options.id;
+			self.getMainData();
 		},
 		methods: {
+			
+			getMainData() {
+				const self = this;
+				const postData = {};
+				postData.tokenFuncName = 'getProjectToken';
+				postData.searchItem = self.searchItem;
+				var callback = function(res){
+					if(res.info.data.length > 0){
+						self.mainData = res.info.data[0];
+					};
+				}
+				self.$apis.articleGet(postData, callback);
+			},
 			
 		}
 	}
